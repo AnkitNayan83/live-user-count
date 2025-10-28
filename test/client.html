@@ -1,26 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">   
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live User Count</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live User Count</title>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at top left, #1e293b, #0f172a);
+      color: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #38bdf8, #818cf8, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 1.5rem;
+      letter-spacing: 1px;
+    }
+
+    #card {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 2rem 3rem;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      text-align: center;
+      backdrop-filter: blur(10px);
+      transition: transform 0.3s ease;
+    }
+
+    #card:hover {
+      transform: translateY(-6px);
+    }
+
+    #userCount {
+      font-size: 1.6rem;
+      margin-top: 0.8rem;
+    }
+
+    .live-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      background-color: #22c55e;
+      border-radius: 50%;
+      margin-right: 8px;
+      animation: pulse 1.2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.3); }
+    }
+
+    footer {
+      position: absolute;
+      bottom: 1rem;
+      font-size: 0.9rem;
+      color: #94a3b8;
+    }
+
+    a {
+      color: #38bdf8;
+      text-decoration: none;
+    }
+  </style>
 </head>
 <body>
-    <h1>Live User Count</h1>
+  <h1>🚀 Live User Count</h1>
+  <div id="card">
+    <div><span class="live-dot"></span><strong>Connected</strong></div>
     <div id="userCount">Users on page 1: 0</div>
+  </div>
 
-    <script>
-        const socket = new WebSocket("ws://localhost:8000/ws?page_id=1");
+  <footer>
+    Built with ❤️ using Go + WebSockets
+  </footer>
 
-        socket.onopen = () => console.log("✅ Connected to WebSocket");
-        socket.onclose = () => console.log("❌ Disconnected");
-        socket.onerror = (err) => console.error("WebSocket error:", err);
+  <script>
+    const socket = new WebSocket("ws://localhost:8000/ws?page_id=1");
+    const statusDot = document.querySelector(".live-dot");
+    const statusText = document.querySelector("#card strong");
 
-        socket.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            document.getElementById("userCount").innerText =
-                `Users on page ${data.page}: ${data.count}`;
-        };
-    </script>
+    socket.onopen = () => {
+      console.log("✅ Connected to WebSocket");
+      statusDot.style.backgroundColor = "#22c55e";
+      statusText.textContent = "Connected";
+    };
+
+    socket.onclose = () => {
+      console.log("❌ Disconnected");
+      statusDot.style.backgroundColor = "#ef4444";
+      statusText.textContent = "Disconnected";
+    };
+
+    socket.onerror = (err) => console.error("WebSocket error:", err);
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      document.getElementById("userCount").innerText =
+        `Users on page ${data.page}: ${data.count}`;
+    };
+  </script>
 </body>
 </html>
