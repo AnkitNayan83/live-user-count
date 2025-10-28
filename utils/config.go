@@ -1,6 +1,10 @@
 package utils
 
-import "github.com/spf13/viper"
+import (
+	"log"
+
+	"github.com/spf13/viper"
+)
 
 type Config struct {
 	RedisUrl      string `mapstructure:"REDIS_URL"`
@@ -16,7 +20,11 @@ func LoadConfig(path string) (config Config, err error) {
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
-		return config, err
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			log.Println("⚠️  No .env file found, using environment variables instead")
+		} else {
+			return config, err
+		}
 	}
 
 	if err := viper.Unmarshal(&config); err != nil {
