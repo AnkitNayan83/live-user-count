@@ -2,6 +2,7 @@ package utils
 
 import (
 	"log"
+	"strings"
 
 	"github.com/spf13/viper"
 )
@@ -20,8 +21,8 @@ func LoadConfig(path string) (config Config, err error) {
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			log.Println("⚠️  No .env file found, using environment variables instead")
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok || strings.Contains(err.Error(), "no such file") {
+			log.Println("⚠️  No .env file found — using environment variables instead")
 		} else {
 			return config, err
 		}
