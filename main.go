@@ -36,6 +36,11 @@ func main() {
 
 	r := gin.Default()
 
+	// static html file
+	r.GET("/", func(c *gin.Context) {
+		c.File("./test/index.html")
+	})
+
 	// simple health
 	r.GET("/health", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"ok": true}) })
 
