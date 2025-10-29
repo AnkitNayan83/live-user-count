@@ -2,24 +2,6 @@
 
 A **real-time, scalable user presence tracking system** built with Go, WebSockets, and Redis. This system tracks and broadcasts live user counts per page across multiple server instances with sub-second latency.
 
-## 📋 Table of Contents
-
-- [Overview](#overview)
-- [Architecture](#architecture)
-- [System Components](#system-components)
-- [Features](#features)
-- [Technology Stack](#technology-stack)
-- [Project Structure](#project-structure)
-- [API Endpoints](#api-endpoints)
-- [WebSocket Protocol](#websocket-protocol)
-- [Data Flow](#data-flow)
-- [Setup & Installation](#setup--installation)
-- [Configuration](#configuration)
-- [Usage Examples](#usage-examples)
-- [Scaling Considerations](#scaling-considerations)
-- [Performance](#performance)
-- [Future Improvements](#future-improvements)
-
 ## 🎯 Overview
 
 This system provides **real-time user presence tracking** for web applications. It can track how many users are currently viewing each page/section of your application and broadcast updates instantly to all connected clients.
@@ -32,53 +14,6 @@ This system provides **real-time user presence tracking** for web applications. 
 - ✅ **Persistent state** with Redis backend
 - ✅ **Automatic connection management** and cleanup
 - ✅ **Sub-second latency** for presence updates
-
-## 🏗️ Architecture
-
-```mermaid
-graph TB
-    subgraph "Client Layer"
-        C1[Browser Client 1]
-        C2[Browser Client 2]
-        C3[Browser Client N]
-    end
-
-    subgraph "Load Balancer"
-        LB[Load Balancer]
-    end
-
-    subgraph "Application Layer"
-        S1[Server Instance 1]
-        S2[Server Instance 2]
-        S3[Server Instance N]
-    end
-
-    subgraph "Data Layer"
-        R[Redis Cluster]
-    end
-
-    C1 -.->|WebSocket| LB
-    C2 -.->|WebSocket| LB
-    C3 -.->|WebSocket| LB
-
-    LB --> S1
-    LB --> S2
-    LB --> S3
-
-    S1 <-->|Pub/Sub| R
-    S2 <-->|Pub/Sub| R
-    S3 <-->|Pub/Sub| R
-
-    S1 <-.->|Cross-Instance| S2
-    S2 <-.->|Cross-Instance| S3
-```
-
-### Architecture Principles:
-
-1. **Event-Driven**: Uses channels and goroutines for concurrent processing
-2. **Stateless Servers**: All state stored in Redis for horizontal scaling
-3. **Pub/Sub Pattern**: Redis handles cross-instance communication
-4. **Hub Pattern**: Centralized WebSocket connection management
 
 ## 🔧 System Components
 
